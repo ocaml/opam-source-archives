@@ -1,0 +1,7 @@
+lib: [
+  "genlet.a"
+  "genlet.cma"
+  "gengenlet.cmi"
+  "genlet.cmxa"
+  "META"
+]
