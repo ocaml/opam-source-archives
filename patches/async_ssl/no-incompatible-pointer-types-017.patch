@@ -1,0 +1,12 @@
+--- a/src/dune
++++ b/src/dune
+@@ -26,7 +26,8 @@
+   (flags
+    (:standard \ -Werror -pedantic -Wall -Wunused)
+    -w
+-   (:include ../bindings/openssl-ccopt.sexp)))
++   (:include ../bindings/openssl-ccopt.sexp)
++   -Wno-incompatible-pointer-types))
+  (name async_ssl)
+  (public_name async_ssl)
+  (modules import version opt verify_mode ffi_generated_types ffi_generated

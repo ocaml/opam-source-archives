@@ -1,0 +1,14 @@
+--- a/src/dune
++++ b/src/dune
+@@ -15,7 +15,8 @@
+   ffi__library_must_be_initialized rfc3526 ssl initialize std config tls)
+  (c_names ffi_generated_stubs) (flags :standard -w -9-27-32-34)
+  (c_flags (:standard \ -Werror -pedantic -Wall -Wunused) -w
+-  (:include ../bindings/openssl-ccopt.sexp))
++  (:include ../bindings/openssl-ccopt.sexp)
++  -Wno-incompatible-pointer-types)
+  (c_library_flags :standard (:include ../bindings/openssl-cclib.sexp))
+  (libraries async core async_ssl_bindings ctypes.stubs ctypes)
+- (preprocess (pps ppx_jane)))
+\ No newline at end of file
++ (preprocess (pps ppx_jane)))
