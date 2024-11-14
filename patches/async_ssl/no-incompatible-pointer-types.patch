@@ -1,0 +1,12 @@
+--- a/src/dune
++++ b/src/dune
+@@ -20,7 +28,8 @@
+    -w
+    (:include ../bindings/openssl-ccopt.sexp)
+    -Wno-int-conversion
+-   -Wno-implicit-function-declaration))
++   -Wno-implicit-function-declaration
++   -Wno-incompatible-pointer-types))
+  (name async_ssl)
+  (public_name async_ssl)
+  (modules import version opt verify_mode ffi_generated_types ffi_generated
