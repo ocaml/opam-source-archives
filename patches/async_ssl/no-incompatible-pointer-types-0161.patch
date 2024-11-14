@@ -1,5 +1,3 @@
-diff --git a/src/dune b/src/dune
-index 12842f3..97cb73f 100644
 --- a/src/dune
 +++ b/src/dune
 @@ -15,7 +15,8 @@
