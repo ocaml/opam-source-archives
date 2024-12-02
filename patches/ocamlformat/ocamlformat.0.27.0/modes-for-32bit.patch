@@ -1,0 +1,14 @@
+diff --git a/bin/ocamlformat/dune b/bin/ocamlformat/dune
+index 0428897125..86de53edca 100644
+--- a/bin/ocamlformat/dune
++++ b/bin/ocamlformat/dune
+@@ -18,8 +18,7 @@
+   (:standard -open Ocamlformat_stdlib))
+  (instrumentation
+   (backend bisect_ppx))
+- (libraries ocamlformat-lib bin_conf)
+- (modes byte native))
++ (libraries ocamlformat-lib bin_conf))
+ 
+ (rule
+  (with-stdout-to
