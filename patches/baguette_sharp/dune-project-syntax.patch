@@ -1,0 +1,20 @@
+From 8809bc39a5e2cb02f757636f9939dc7818876779 Mon Sep 17 00:00:00 2001
+From: Ambre Austen Suhamy <ambre@tarides.com>
+Date: Thu, 21 Dec 2023 13:40:23 +0100
+Subject: [PATCH] Syntax fix in dune-project dependency
+
+---
+ dune-project | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/dune-project b/dune-project
+index 1a9b7b6..5bce630 100644
+--- a/dune-project
++++ b/dune-project
+@@ -20,5 +20,4 @@
+  (synopsis "The Baguette# Interpreter REPL")
+  (description "The REPL for Baguette#")
+  (depends
+- {"ocaml">=4.13.1})
+- )
++  (ocaml (>= 4.13.1))))
