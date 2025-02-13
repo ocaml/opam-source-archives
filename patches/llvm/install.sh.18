@@ -20,7 +20,7 @@ function llvm_build {
         -DLLVM_LINK_LLVM_DYLIB=`[ $link_mode = "shared" ] && echo TRUE || echo FALSE` \
         -DLLVM_OCAML_OUT_OF_TREE=TRUE \
         -DLLVM_OCAML_INSTALL_PATH="${libdir}"
-    $make -Cbuild ocaml_all
+    $make -j -Cbuild ocaml_all
 }
 
 function llvm_install {
@@ -41,3 +41,4 @@ case "$action" in
   exit 1
   ;;
 esac
+
