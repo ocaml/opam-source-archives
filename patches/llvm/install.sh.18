@@ -1,11 +1,77 @@
 #!/bin/bash -ex
 
-llvm_config="$1"
-libdir="$2"
-cmake="$3"
-make="$4"
-action="$5"
-link_mode="$6"
+action=""
+llvm_config=""
+libdir=""
+cmake=""
+make=""
+link_mode=""
+use_homebrew=FALSE
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+      --llvm-config)
+          if [[ $# -lt 2 ]]; then
+              echo "No llvm-config specified."
+              exit 1
+          fi
+          llvm_config="$2"
+          shift
+          shift
+          ;;
+      --libdir)
+          if [[ $# -lt 2 ]]; then
+              echo "No libdir specified."
+              exit 1
+          fi
+          libdir="$2"
+          shift
+          shift
+          ;;
+      --cmake)
+          if [[ $# -lt 2 ]]; then
+              echo "No cmake specified."
+              exit 1
+          fi
+          cmake="$2"
+          shift
+          shift
+          ;;
+      --make)
+          if [[ $# -lt 2 ]]; then
+              echo "No make specified."
+              exit 1
+          fi
+          make="$2"
+          shift
+          shift
+          ;;
+      --link-mode)
+          if [[ $# -lt 2 ]]; then
+              echo "No link-mode specified."
+              exit 1
+          fi
+          link_mode="$2"
+          shift
+          shift
+          ;;
+      --use-homebrew)
+          use_homebrew=TRUE
+          shift
+          ;;
+      "build")
+          action="build"
+          shift
+          ;;
+      "install")
+          action="install"
+          shift
+          ;;
+      *)
+          shift
+          ;;
+    esac
+done
 
 function filter_experimental_targets {
     sed 's/ARC//g' | sed 's/CSKY//g' | sed 's/DirectX//g' | sed 's/M68k//g' | sed 's/SPIRV//g' | sed 's/Xtensa//g' | xargs
@@ -19,7 +85,8 @@ function llvm_build {
         -DLLVM_OCAML_EXTERNAL_LLVM_LIBDIR=`"$llvm_config" --libdir` \
         -DLLVM_LINK_LLVM_DYLIB=`[ $link_mode = "shared" ] && echo TRUE || echo FALSE` \
         -DLLVM_OCAML_OUT_OF_TREE=TRUE \
-        -DLLVM_OCAML_INSTALL_PATH="${libdir}"
+        -DLLVM_OCAML_INSTALL_PATH="${libdir}" \
+        -DLLVM_OCAML_USE_HOMEBREW="${use_homebrew}"
     $make -j -Cbuild ocaml_all
 }
 
