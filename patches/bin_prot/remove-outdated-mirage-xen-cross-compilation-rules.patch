@@ -1,0 +1,190 @@
+From 61cdc0d67e398baff69f7dbde727c61da6409ce5 Mon Sep 17 00:00:00 2001
+From: Hannes Mehnert <hannes@mehnert.org>
+Date: Thu, 6 Jun 2024 17:55:47 +0200
+Subject: [PATCH] remove outdated mirage (xen) cross-compilation rules
+
+These were needed in mirage before 4.0 (released 2022-03-28)
+In addition, mirage-xen-ocaml was phased out in 2020 (with solo5 0.6.6 release)
+
+Signed-off-by: Hannes Mehnert <hannes@mehnert.org>
+---
+ META.bin_prot.template |   3 --
+ bin_prot.opam          |   3 --
+ xen/blit_stubs.c       | 103 -----------------------------------------
+ xen/cflags.sh          |   4 --
+ xen/dune               |  18 -------
+ 5 files changed, 131 deletions(-)
+ delete mode 100644 META.bin_prot.template
+ delete mode 100644 xen/blit_stubs.c
+ delete mode 100755 xen/cflags.sh
+ delete mode 100644 xen/dune
+
+diff --git a/META.bin_prot.template b/META.bin_prot.template
+deleted file mode 100644
+index 3077b76..0000000
+--- a/META.bin_prot.template
++++ /dev/null
+@@ -1,3 +0,0 @@
+-# JBUILDER_GEN
+-
+-xen_linkopts = "-lbin_prot_xen_stubs"
+diff --git a/bin_prot.opam b/bin_prot.opam
+index d256d13..2aa5ed8 100644
+--- a/bin_prot.opam
++++ b/bin_prot.opam
+@@ -22,9 +22,6 @@ depends: [
+   "ppx_variants_conv"  {>= "v0.17" & < "v0.18"}
+   "dune"               {>= "3.11.0"}
+ ]
+-depopts: [
+-  "mirage-xen-ocaml"
+-]
+ available: arch != "arm32" & arch != "x86_32"
+ synopsis: "A binary protocol generator"
+ description: "
+diff --git a/xen/blit_stubs.c b/xen/blit_stubs.c
+deleted file mode 100644
+index 6792401..0000000
+--- a/xen/blit_stubs.c
++++ /dev/null
+@@ -1,103 +0,0 @@
+-/* Blitting between buffers/strings/float arrays */
+-
+-#include <string.h>
+-
+-#include <caml/mlvalues.h>
+-#include <caml/memory.h>
+-#include <caml/bigarray.h>
+-#include <caml/signals.h>
+-
+-#if defined(__GNUC__) && __GNUC__ >= 3
+-#ifndef __likely
+-#define likely(x) __builtin_expect(!!(x), 1)
+-#endif
+-#ifndef __unlikely
+-#define unlikely(x) __builtin_expect(!!(x), 0)
+-#endif
+-#else
+-#ifndef __likely
+-#define likely(x) (x)
+-#endif
+-#ifndef __unlikely
+-#define unlikely(x) (x)
+-#endif
+-#endif
+-
+-#ifdef __MINIOS__
+-#define unlikely(x) __builtin_expect((x), 0)
+-#endif
+-
+-#define get_buf(v_buf, v_pos) (char *)Caml_ba_data_val(v_buf) + Long_val(v_pos)
+-
+-/* Bytes_val is only available from 4.06 */
+-#ifndef Bytes_val
+-#define Bytes_val String_val
+-#endif
+-
+-CAMLprim value bin_prot_blit_string_buf_stub(value v_src_pos, value v_str,
+-                                             value v_dst_pos, value v_buf,
+-                                             value v_len) {
+-  const char *str = String_val(v_str) + Long_val(v_src_pos);
+-  char *buf = get_buf(v_buf, v_dst_pos);
+-  memcpy(buf, str, (size_t)Long_val(v_len));
+-  return Val_unit;
+-}
+-
+-CAMLprim value bin_prot_blit_bytes_buf_stub(value v_src_pos, value v_str,
+-                                            value v_dst_pos, value v_buf,
+-                                            value v_len) {
+-  unsigned char *str = Bytes_val(v_str) + Long_val(v_src_pos);
+-  char *buf = get_buf(v_buf, v_dst_pos);
+-  memcpy(buf, str, (size_t)Long_val(v_len));
+-  return Val_unit;
+-}
+-
+-CAMLprim value bin_prot_blit_buf_bytes_stub(value v_src_pos, value v_buf,
+-                                            value v_dst_pos, value v_str,
+-                                            value v_len) {
+-  char *buf = get_buf(v_buf, v_src_pos);
+-  unsigned char *str = Bytes_val(v_str) + Long_val(v_dst_pos);
+-  memcpy(str, buf, (size_t)Long_val(v_len));
+-  return Val_unit;
+-}
+-
+-CAMLprim value bin_prot_blit_buf_stub(value v_src_pos, value v_src,
+-                                      value v_dst_pos, value v_dst,
+-                                      value v_len) {
+-  struct caml_ba_array *ba_src = Caml_ba_array_val(v_src);
+-  struct caml_ba_array *ba_dst = Caml_ba_array_val(v_dst);
+-  char *src = (char *)ba_src->data + Long_val(v_src_pos);
+-  char *dst = (char *)ba_dst->data + Long_val(v_dst_pos);
+-  size_t len = (size_t)Long_val(v_len);
+-  if (unlikely(len > 65536) ||
+-      unlikely(((ba_src->flags & CAML_BA_MAPPED_FILE) != 0)) ||
+-      unlikely(((ba_dst->flags & CAML_BA_MAPPED_FILE) != 0)))
+-  /* use [memmove] rather than [memcpy] because src and dst may overlap */
+-  {
+-    Begin_roots2(v_src, v_dst);
+-    caml_enter_blocking_section();
+-    memmove(dst, src, len);
+-    caml_leave_blocking_section();
+-    End_roots();
+-  } else
+-    memmove(dst, src, len);
+-  return Val_unit;
+-}
+-
+-CAMLprim value bin_prot_blit_float_array_buf_stub(value v_src_pos, value v_arr,
+-                                                  value v_dst_pos, value v_buf,
+-                                                  value v_len) {
+-  char *arr = (char *)v_arr + Long_val(v_src_pos) * sizeof(double);
+-  char *buf = get_buf(v_buf, v_dst_pos);
+-  memcpy(buf, arr, (size_t)(Long_val(v_len) * sizeof(double)));
+-  return Val_unit;
+-}
+-
+-CAMLprim value bin_prot_blit_buf_float_array_stub(value v_src_pos, value v_buf,
+-                                                  value v_dst_pos, value v_arr,
+-                                                  value v_len) {
+-  char *buf = get_buf(v_buf, v_src_pos);
+-  char *arr = (char *)v_arr + Long_val(v_dst_pos) * sizeof(double);
+-  memcpy(arr, buf, (size_t)(Long_val(v_len) * sizeof(double)));
+-  return Val_unit;
+-}
+diff --git a/xen/cflags.sh b/xen/cflags.sh
+deleted file mode 100755
+index 0130453..0000000
+--- a/xen/cflags.sh
++++ /dev/null
+@@ -1,4 +0,0 @@
+-#!/bin/bash
+-set -e -o pipefail
+-flags="$(pkg-config --static mirage-xen --cflags)" || flags=""
+-echo "($flags)"
+diff --git a/xen/dune b/xen/dune
+deleted file mode 100644
+index c817e7b..0000000
+--- a/xen/dune
++++ /dev/null
+@@ -1,18 +0,0 @@
+-(rule
+- (targets cflags.sexp)
+- (deps
+-  (:first_dep cflags.sh))
+- (action
+-  (bash "./%{first_dep} > %{targets}")))
+-
+-(library
+- (foreign_stubs
+-  (language c)
+-  (flags
+-   (:include cflags.sexp)))
+- (name bin_prot_xen)
+- (public_name bin_prot.xen)
+- (optional)
+- (virtual_deps mirage-xen-ocaml)
+- (libraries)
+- (preprocess no_preprocessing))
+-- 
+2.49.0
+
