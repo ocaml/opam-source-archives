@@ -1,0 +1,64 @@
+diff --git a/test/cram-tests/ocaml-codegen.t/run.t b/test/cram-tests/ocaml-codegen.t/run.t
+index 68db589..5b00c38 100644
+--- a/test/cram-tests/ocaml-codegen.t/run.t
++++ b/test/cram-tests/ocaml-codegen.t/run.t
+@@ -15,6 +15,7 @@ Show EFSM for Client and Server
+     6 -> 7 [label="S?bye()", ];
+     
+     }
++  
+   $ nuscr --fsm=S@Adder Adder.nuscr
+   digraph G {
+     0;
+@@ -31,6 +32,7 @@ Show EFSM for Client and Server
+     6 -> 7 [label="C!bye()", ];
+     
+     }
++  
+ Generate OCaml code for Adders Client
+   $ nuscr --gencode-ocaml=C@Adder Adder.nuscr > C.ml
+ Generate OCaml code for Adders Server
+diff --git a/test/cram-tests/ocaml-monadic-codegen.t/run.t b/test/cram-tests/ocaml-monadic-codegen.t/run.t
+index ed45901..8ad2592 100644
+--- a/test/cram-tests/ocaml-monadic-codegen.t/run.t
++++ b/test/cram-tests/ocaml-monadic-codegen.t/run.t
+@@ -15,6 +15,7 @@ Show EFSM for Client and Server
+     6 -> 7 [label="S?bye()", ];
+     
+     }
++  
+   $ nuscr --fsm=S@Adder Adder.nuscr
+   digraph G {
+     0;
+@@ -31,6 +32,7 @@ Show EFSM for Client and Server
+     6 -> 7 [label="C!bye()", ];
+     
+     }
++  
+ Generate OCaml code for Adders Client
+   $ nuscr --gencode-ocaml-monadic=C@Adder Adder.nuscr > C.ml
+ Generate OCaml code for Adders Server
+diff --git a/test/cram-tests/refinements/annotated-fsm.t/run.t b/test/cram-tests/refinements/annotated-fsm.t/run.t
+index 768327b..1ffc22e 100644
+--- a/test/cram-tests/refinements/annotated-fsm.t/run.t
++++ b/test/cram-tests/refinements/annotated-fsm.t/run.t
+@@ -12,6 +12,7 @@ Expecting recursion expressions to be correctly attached.
+     5 -> 6 [label="A!Total(sum: sum:int{(sum)=(count)})", ];
+     
+     }
++  
+ 
+ Var info should be as follows:
+ 0 should have rec var: count
+diff --git a/test/cram-tests/refinements/state-var-contract.t/run.t b/test/cram-tests/refinements/state-var-contract.t/run.t
+index deefe2b..a7994b3 100644
+--- a/test/cram-tests/refinements/state-var-contract.t/run.t
++++ b/test/cram-tests/refinements/state-var-contract.t/run.t
+@@ -27,6 +27,7 @@ Print FSM for C@Contract
+     9 -> 10 [label="P?confirm()", ];
+     
+     }
++  
+ Print State Variables:
+   $ nuscr --gencode-fstar C@Contract Contract.nuscr
+   module Generated
