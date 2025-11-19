@@ -1,0 +1,15 @@
+commit a6135f9b75e3923cbd720e4b02b57073b022f1a7
+Author: François Bobot <francois.bobot@cea.fr>
+Date:   Thu Nov 6 10:06:16 2025 +0100
+
+    The exn field is a value not a void*
+
+diff --git a/sedscript_c b/sedscript_c
+index 5aa3525..48b86a3 100644
+--- a/sedscript_c
++++ b/sedscript_c
+@@ -13,3 +13,4 @@ s/camlidl_bdd/camlidl_cudd_bdd/g;
+ s/camlidl_add/camlidl_cudd_add/g;
+ s/camlidl_zdd/camlidl_cudd_zdd/g;
+ s/camlidl_vdd/camlidl_cudd_vdd/g;
++s/(\*_c2)\.exn = NULL;/(*_c2).exn = Val_unit;/g;
