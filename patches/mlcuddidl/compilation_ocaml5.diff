@@ -1,0 +1,98 @@
+commit a584ab0e479f6a63b5a2fdac073ee8cb70fcb730
+Author: François Bobot <francois.bobot@cea.fr>
+Date:   Mon Sep 1 16:04:44 2025 +0200
+
+    Remove vdd and others which depends too much on the runtime
+
+diff --git a/Makefile b/Makefile
+index ecfa494..66e4d9c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -40,9 +40,9 @@ LDFLAGS = -L$(CAMLIDL_DIR) -lcamlidl
+ # Files
+ #---------------------------------------
+ 
+-IDLMODULES = hash cache memo man bdd vdd custom add
++IDLMODULES = hash cache memo man bdd
+ 
+-MLMODULES = hash cache memo man bdd vdd custom weakke pWeakke mtbdd mtbddc user mapleaf add
++MLMODULES = hash cache memo man bdd
+ 
+ CUDDAUX_C = $(wildcard cuddaux*.c)
+ CCMODULES = $(CUDDAUX_C:%.c=%) $(IDLMODULES:%=%_caml) cudd_caml
+diff --git a/configure b/configure
+index ab42604..5577c32 100755
+--- a/configure
++++ b/configure
+@@ -114,8 +114,8 @@ find_ocmd OCAMLC ocamlc;
+ 
+ overs=$(${OCAMLC} -version);
+ case "${overs}" in
+-    [1-3].* | 4.0[1-3].* | [5-9]* | [1-9][0-9]*)
+-	err "OCaml version found is ${overs}: OCaml >= 4.04 & < 5 is required.";;
++    [1-3].* | 4.0[1-3].* | [1-9][0-9]*)
++	err "OCaml version found is ${overs}: OCaml >= 4.04.";;
+     *)
+ 	:;;
+ esac
+diff --git a/cudd_caml.c b/cudd_caml.c
+index 662b91d..6bb5846 100644
+--- a/cudd_caml.c
++++ b/cudd_caml.c
+@@ -1080,7 +1080,7 @@ value camlidl_cudd_avdd_iter_cube(value _v_closure, value _v_no)
+ 	_v_val = type.value;
+       }
+       else {
+-	_v_val = copy_double(val);
++	_v_val = caml_copy_double(val);
+       }
+       caml_callback2(_v_closure,_v_array,_v_val);
+     }
+@@ -1604,8 +1604,8 @@ DdNode* camlidl_cudd_custom_op2(DdManager* dd, struct op2* op,
+ 	  _v_G = cuddauxCamlV(G);
+ 	}
+ 	else {
+-	  _v_F = copy_double(cuddV(F));
+-	  _v_G = copy_double(cuddV(G));
++	  _v_F = caml_copy_double(cuddV(F));
++	  _v_G = caml_copy_double(cuddV(G));
+ 	}
+ 	_v_val = caml_callback2_exn(op->closure2, _v_F, _v_G);
+ 	res = camlidl_cudd_custom_result(&op->common2,_v_val);
+@@ -1654,9 +1654,9 @@ DdNode* camlidl_cudd_custom_op3(DdManager* dd, struct op3* op, DdNode* F, DdNode
+ 	  _v_H = cuddauxCamlV(H);
+ 	}
+ 	else {
+-	  _v_F = copy_double(cuddV(F));
+-	  _v_G = copy_double(cuddV(G));
+-	  _v_H = copy_double(cuddV(H));
++	  _v_F = caml_copy_double(cuddV(F));
++	  _v_G = caml_copy_double(cuddV(G));
++	  _v_H = caml_copy_double(cuddV(H));
+ 	}
+ 	_v_val = caml_callback3_exn(op->closure3,_v_F,_v_G,_v_H);
+ 	res = camlidl_cudd_custom_result(&op->common3,_v_val);
+@@ -1707,8 +1707,8 @@ DdNode* camlidl_cudd_custom_test2(DdManager* dd, struct test2* op, DdNode* F, Dd
+ 	  _v_G = cuddauxCamlV(G);
+ 	}
+ 	else {
+-	  _v_F = copy_double(cuddV(F));
+-	  _v_G = copy_double(cuddV(G));
++	  _v_F = caml_copy_double(cuddV(F));
++	  _v_G = caml_copy_double(cuddV(G));
+ 	}
+ 	_v_val = caml_callback2_exn(op->closure2t, _v_F, _v_G);
+ 	res = camlidl_cudd_custom_resultbool(&op->common2t,_v_val);
+diff --git a/cuddaux.h b/cuddaux.h
+index 71f9898..4df5615 100644
+--- a/cuddaux.h
++++ b/cuddaux.h
+@@ -323,7 +323,7 @@ static inline DdNode* cuddauxUniqueType(struct CuddauxMan* man, CuddauxType* typ
+ }
+ static inline value Val_type(bool caml, CuddauxType* type)
+ {
+-  return caml ? type->value : copy_double(type->dbl);
++  return caml ? type->value : caml_copy_double(type->dbl);
+ }
+ static inline value Val_DdNode(bool caml, DdNode* node)
+ {
