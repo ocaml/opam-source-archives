@@ -1,0 +1,13 @@
+diff --git a/framaCIRGen_src/ClangVisitor.cpp b/framaCIRGen_src/ClangVisitor.cpp
+index 2c88fa65..5e09882d 100644
+--- a/framaCIRGen_src/ClangVisitor.cpp
++++ b/framaCIRGen_src/ClangVisitor.cpp
+@@ -6967,7 +6967,7 @@ bool FramacVisitor::VisitFunctionDecl(clang::FunctionDecl *Decl) {
+           funcBare = translation_unit_decl_Function(
+               decl_or_impl_name_dup(decl_name), funkind_dup(kind),
+               copy_loc(loc), qual_type_dup(return_type), prmsBare, bodyBare,
+-              false, NULL, is_variadic, tkind_dup(templateExtension),
++              false, false, is_variadic, tkind_dup(templateExtension),
+               false /* has_further_definition */, opt_none() /*throws*/,
+               opt_none());
+           decl_or_impl_name bareDecl =
