@@ -1,0 +1,26 @@
+diff --git a/config/Makefile.unix b/config/Makefile.unix
+index 9d769e9..a9fa30c 100644
+--- a/config/Makefile.unix
++++ b/config/Makefile.unix
+@@ -44,7 +44,7 @@ OCAMLLEX=ocamllex
+ OCAMLDEP=ocamldep
+ 
+ # Extra flags to pass to the C compiler
+-CFLAGS=-Wall -g
++CFLAGS=-Wall -g -Wno-error=incompatible-pointer-types
+ 
+ # Suffixes for executables and libraries (do not change)
+ EXE=
+diff --git a/runtime/comerror.c b/runtime/comerror.c
+index c0e78c3..842c837 100644
+--- a/runtime/comerror.c
++++ b/runtime/comerror.c
+@@ -147,7 +147,7 @@ HRESULT camlidl_result_exception(char * methname, value exn_bucket)
+       createrr->lpVtbl->SetSource(createrr, wstr);
+       free(wstr);
+     }
+-    exndesc = format_caml_exception(exn_bucket);
++    exndesc = caml_format_exception(exn_bucket);
+     if (exndesc != NULL) {
+       wstrlen = strlen(exndesc);
+       wstr = (wchar_t *) malloc((wstrlen + 1) * sizeof(wchar_t));
