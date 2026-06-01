@@ -1,0 +1,10 @@
+diff --git a/colibri2/tests/cram/dune b/colibri2/tests/cram/dune
+index fd64b76d..5a4bb7b0 100644
+--- a/colibri2/tests/cram/dune
++++ b/colibri2/tests/cram/dune
+@@ -1,2 +1,3 @@
+ (cram
+- (deps (package colibri2)))
+\ No newline at end of file
++ (package colibri2)
++ (deps (package colibri2)))
