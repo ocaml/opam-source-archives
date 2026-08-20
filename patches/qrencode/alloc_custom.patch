@@ -1,0 +1,22 @@
+diff --git a/src/qrencode_stubs.c b/src/qrencode_stubs.c
+index 2e3389e..1956395 100644
+--- a/src/qrencode_stubs.c
++++ b/src/qrencode_stubs.c
+@@ -28,7 +28,7 @@ static struct custom_operations qrcode_ops = {
+
+ /* Allocating a Caml custom block to hold the given QRcode * */
+ static value alloc_QRcode(QRcode * w) {
+-  value v = alloc_custom(&qrcode_ops, sizeof(QRcode *), 0, 1);
++  value v = caml_alloc_custom(&qrcode_ops, sizeof(QRcode *), 0, 1);
+   QRcode_val(v) = w;
+   return v;
+ }
+@@ -59,7 +59,7 @@ static struct custom_operations qrinput_ops = {
+
+ /* Allocating a Caml custom block to hold the given QRinput * */
+ static value alloc_QRinput(QRinput * w) {
+-  value v = alloc_custom(&qrinput_ops, sizeof(QRinput *), 0, 1);
++  value v = caml_alloc_custom(&qrinput_ops, sizeof(QRinput *), 0, 1);
+   QRinput_val(v) = w;
+   return v;
+ }
