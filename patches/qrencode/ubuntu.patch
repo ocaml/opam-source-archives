@@ -1,0 +1,13 @@
+diff --git a/src/config/discover.ml b/src/config/discover.ml
+index f849950..d335e03 100644
+--- a/src/config/discover.ml
++++ b/src/config/discover.ml
+@@ -3,7 +3,7 @@ module C = Configurator.V1
+ let () =
+   C.main ~name:"libqrencode" begin fun c ->
+     let default : C.Pkg_config.package_conf = {
+-      libs   = ["-lqrencode -libpng16 -lz"];
++      libs   = ["-L/usr/lib/x86_64-linux-gnu -lqrencode -libpng16 -lz"];
+       cflags = []
+     } in
+     let conf =
