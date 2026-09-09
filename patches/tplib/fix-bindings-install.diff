@@ -1,0 +1,25 @@
+diff --git a/Makefile.in b/Makefile.in
+index c36070a..393e981 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -62,6 +62,8 @@ ifeq ($(HAVE_BINDING),yes)
+ 		LDFLAGS += $(gmplibs)
+ 	endif
+ 	endif
++	INSTALL_BINDINGS = install-bindings
++	UNINSTALL_BINDINGS = uninstall-bindings
+ endif
+ 
+ ifneq ($(DYNLINK),no)
+@@ -95,9 +97,9 @@ all:	ocaml-all $(BINDING_TGT)
+ 
+ test: 	all ocaml-test $(C_TEST_TGT)
+ 
+-install: install-ocaml-lib install-ocaml-bin install-bindings
++install: install-ocaml-lib install-ocaml-bin $(INSTALL_BINDINGS)
+ 
+-uninstall: uninstall-ocaml-lib uninstall-ocaml-bin uninstall-bindings
++uninstall: uninstall-ocaml-lib uninstall-ocaml-bin $(UNINSTALL_BINDINGS)
+ 
+ reinstall: uninstall install
+ 
