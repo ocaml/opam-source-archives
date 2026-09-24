@@ -1,0 +1,54 @@
+commit 86388a2b17dc6b447ede816239e3fb992da5b876 (HEAD -> master)
+Author: Kakadu <kakadu.hafanana@gmail.com>
+Date:   Tue Sep 22 10:27:44 2026 +0300
+
+    Fix compilation waninigs/errors appeared in new GCC 14.
+
+    It looks like that multiary constuction functions were used for
+    conjunction/disjunction in places where benary ones are suffice.
+
+    Error was:
+
+    > src/terms.c: In function 'ocamlyices_term_bitvector_and':
+     src/terms.c:1162:21: error: passing argument 1 of '_oy_binary' from incompatible pointer type [-Wincompatible-pointer-types]
+      1162 |   return _oy_binary(&yices_bvand, arg1, arg2);
+           |                     ^~~~~~~~~~~~
+           |                     |
+           |                     term_t (*)(uint32_t,  const term_t *) {aka int (*)(unsigned int,  const int *)}
+
+ 	N.B. Patch was create with help of LLM
+
+    Signed-off-by: Kakadu <kakadu.hafanana@gmail.com>
+
+diff --git a/src/terms.c b/src/terms.c
+index 7f83f36..fabbc8c 100644
+--- a/src/terms.c
++++ b/src/terms.c
+@@ -1159,15 +1159,15 @@ CAMLprim value ocamlyices_term_bitvector_not(value arg) {
+ }
+
+ CAMLprim value ocamlyices_term_bitvector_and(value arg1, value arg2) {
+-  return _oy_binary(&yices_bvand, arg1, arg2);
++  return _oy_binary(&yices_bvand2, arg1, arg2);
+ }
+
+ CAMLprim value ocamlyices_term_bitvector_or(value arg1, value arg2) {
+-  return _oy_binary(&yices_bvor, arg1, arg2);
++  return _oy_binary(&yices_bvor2, arg1, arg2);
+ }
+
+ CAMLprim value ocamlyices_term_bitvector_xor(value arg1, value arg2) {
+-  return _oy_binary(&yices_bvxor, arg1, arg2);
++  return _oy_binary(&yices_bvxor2, arg1, arg2);
+ }
+
+ CAMLprim value ocamlyices_term_bitvector_nand(value arg1, value arg2) {
+@@ -1252,7 +1252,7 @@ CAMLprim value ocamlyices_term_bitvector_extract(value v_t, value v_i1,
+ }
+
+ CAMLprim value ocamlyices_term_bitvector_concat(value arg1, value arg2) {
+-  return _oy_binary(&yices_bvconcat, arg1, arg2);
++  return _oy_binary(&yices_bvconcat2, arg1, arg2);
+ }
+
+ CAMLprim value ocamlyices_term_bitvector_repeat(value arg1, value arg2) {
